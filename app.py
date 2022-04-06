@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import UserAddForm, LoginForm, MessageForm
+from forms import CSRFProtectForm, UserAddForm, LoginForm, MessageForm
 from models import db, connect_db, User, Message
 
 CURR_USER_KEY = "curr_user"
@@ -113,8 +113,17 @@ def login():
 def logout():
     """Handle logout of user."""
 
-    # IMPLEMENT THIS AND FIX BUG
-    # DO NOT CHANGE METHOD ON ROUTE
+    # Bug was a link rather than form
+    form = CSRFProtectForm()
+
+    if form.validate_on_submit():
+        do_logout()
+        flash("Log out successful.")
+
+    return redirect("/")
+
+
+
 
 
 ##############################################################################
@@ -285,13 +294,17 @@ def homepage():
     """
 
     if g.user:
+
+        #ADDED: test adding CSRFForm
+        form = CSRFProtectForm()
+
         messages = (Message
                     .query
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
 
-        return render_template('home.html', messages=messages)
+        return render_template('home.html', messages=messages, form=form)
 
     else:
         return render_template('home-anon.html')
