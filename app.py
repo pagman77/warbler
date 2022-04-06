@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import CSRFProtectForm, UserAddForm, LoginForm, MessageForm
+from forms import CSRFProtectForm, UserAddForm, LoginForm, MessageForm, UserEditForm
 from models import db, connect_db, User, Message
 
 CURR_USER_KEY = "curr_user"
@@ -30,12 +30,17 @@ db.create_all()
 
 
 @app.before_request
+def add_csrf_form():
+    """Adds CSRF Form"""
+    g.csrf_form = CSRFProtectForm()
+
+
+@app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
-        g.user.csrf_form = CSRFProtectForm()
     else:
         g.user = None
 
@@ -114,7 +119,8 @@ def logout():
     """Handle logout of user."""
 
     # Bug was a link rather than form
-    form = g.user.csrf_form
+    #save to g rather than user.
+    form = g.csrf_form
 
     if form.validate_on_submit():
         do_logout()
@@ -208,12 +214,40 @@ def stop_following(follow_id):
 
     return redirect(f"/users/{g.user.id}/following")
 
-
+#EDIT USER
 @app.route('/users/profile', methods=["GET", "POST"])
 def profile():
     """Update profile for current user."""
 
-    # IMPLEMENT THIS
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    form = UserEditForm(obj=g.user)
+
+    if form.validate_on_submit():
+
+        password = form.password.data
+        curr_username = g.user.username
+        if User.authenticate(curr_username, password):
+
+            g.user.username = form.username.data
+            g.user.email = form.email.data
+            g.user.image_url = form.image_url.data
+            g.user.header_image_url = form.header_image_url.data
+            g.user.bio = form.bio.data
+
+            db.session.commit()
+
+            return redirect(f"/users/{g.user.id}")
+
+        else:
+            flash("Access unauthorized.", "danger")
+            return redirect("/")
+
+    return render_template('users/edit.html', form=form)
+
+
 
 
 @app.post('/users/delete')
@@ -295,11 +329,17 @@ def homepage():
 
     if g.user:
 
+        user_ids = [ user.id for user in g.user.following ]
+        user_ids.append(g.user.id)
+
         messages = (Message
                     .query
+                    .filter( Message.user_id.in_(user_ids) )
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
+
+        # breakpoint()
 
         return render_template('home.html', messages=messages)
 
