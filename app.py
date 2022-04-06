@@ -35,7 +35,7 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
-
+        g.user.csrf_form = CSRFProtectForm()
     else:
         g.user = None
 
@@ -114,7 +114,7 @@ def logout():
     """Handle logout of user."""
 
     # Bug was a link rather than form
-    form = CSRFProtectForm()
+    form = g.user.csrf_form
 
     if form.validate_on_submit():
         do_logout()
@@ -295,16 +295,13 @@ def homepage():
 
     if g.user:
 
-        #ADDED: test adding CSRFForm
-        form = CSRFProtectForm()
-
         messages = (Message
                     .query
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
 
-        return render_template('home.html', messages=messages, form=form)
+        return render_template('home.html', messages=messages)
 
     else:
         return render_template('home-anon.html')

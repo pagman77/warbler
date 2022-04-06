@@ -54,7 +54,7 @@
         <!-- ADDED: logout form with CSRFProtectForm, TODO: match styling to other link btns -->
         <li>
           <form id="CSRFProtectForm" action="/logout" method="POST">
-            {{ form.hidden_tag() }}
+            {{ g.user.csrf_form.hidden_tag() }}
             <button class="btn btn-link"><a>Log out</a></button>
           </form>
         </li>
