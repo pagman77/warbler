@@ -141,7 +141,7 @@ def list_users():
 
     Can take a 'q' param in querystring to search by that username.
     """
-    breakpoint()
+    #breakpoint()
 
     search = request.args.get('q')
 
@@ -184,6 +184,21 @@ def users_followers(user_id):
 
     user = User.query.get_or_404(user_id)
     return render_template('users/followers.html', user=user)
+
+
+
+@app.get('/users/<int:user_id>/liked-messages')
+def users_liked_messages(user_id):
+    """Show a User's liked messages"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    return render_template('users/liked-messages.html', user=user)
+
+
 
 
 @app.post('/users/follow/<int:follow_id>')
@@ -267,6 +282,7 @@ def delete_user():
     return redirect("/signup")
 
 
+
 ##############################################################################
 # Messages routes:
 
@@ -314,6 +330,39 @@ def messages_destroy(message_id):
     db.session.commit()
 
     return redirect(f"/users/{g.user.id}")
+
+
+
+@app.post('/messages/<int:message_id>/like')
+def add_like(message_id):
+    """Have current user like this message."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    message = Message.query.get_or_404(message_id)
+    g.user.liked_messages.append(message)
+    db.session.commit()
+
+    return redirect("/")
+
+
+@app.post('/messages/<int:message_id>/unlike')
+def remove_like(message_id):
+    """Have current user unlike this message."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    message = Message.query.get_or_404(message_id)
+    g.user.liked_messages.remove(message)
+    db.session.commit()
+
+    return redirect("/")
+
+
 
 
 ##############################################################################

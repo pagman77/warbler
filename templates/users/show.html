@@ -19,6 +19,24 @@
             </span>
             <p>{{ message.text }}</p>
           </div>
+
+          <!-- TODO: reverse thumbs ups -->
+        {% if g.user in message.users_liked %}
+          <form
+              method="POST"
+              action="/messages/{{ message.id }}/unlike"
+              class="like-area">
+            <button class="btn btn-outline-success btn-sm"><i class="far fa-thumbs-up"></i></button>
+          </form>
+        {% else %}
+          <form
+            method="POST"
+            action="/messages/{{ message.id }}/like"
+            class="like-area">
+            <button class="btn btn-success btn-sm"><i class="fas fa-thumbs-up"></i></button>
+          </form>
+        {% endif %}
+
         </li>
 
       {% endfor %}

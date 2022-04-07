@@ -275,7 +275,7 @@ nav + .container {
 
 #messages .list-group-item {
   display: flex;
-  align-items: flex-start;
+  justify-content: flex-start;
   padding: 7px 20px 12px;
 }
 
@@ -300,6 +300,16 @@ nav + .container {
 .user-location {
   color: #657786;
 }
+
+.list-group-item .like-area {
+  position: relative;
+  float: right;
+  z-index: 2;
+  align-self: flex-end;
+}
+
+
+
 
 /* ==================== User cards on follower/following pages */
 

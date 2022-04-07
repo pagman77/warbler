@@ -1,0 +1,48 @@
+{% extends 'users/detail.html' %}
+
+{% block like_messages %}
+
+<div class="col-sm-6">
+  <ul class="list-group" id="messages">
+
+    {% for message in user.liked_messages %}
+
+    <li class="list-group-item">
+      <a href="/messages/{{ message.id }}" class="message-link" />
+
+      <a href="/users/{{ user.id }}">
+        <img src="{{ user.image_url }}" alt="user image" class="timeline-image">
+      </a>
+
+      <div class="message-area">
+        <a href="/users/{{ user.id }}">@{{ user.username }}</a>
+        <span class="text-muted">
+          {{ message.timestamp.strftime('%d %B %Y') }}
+        </span>
+        <p>{{ message.text }}</p>
+      </div>
+
+      {% if g.user in message.users_liked %}
+      <form
+        method="POST"
+        action="/messages/{{ message.id }}/unlike"
+        class="like-area">
+        <button class="btn btn-outline-success btn-sm"><i class="fas fa-thumbs-up"></i></button>
+      </form>
+      {% else %}
+      <form
+        method="POST"
+        action="/messages/{{ message.id }}/like"
+        class="like-area">
+        <button class="btn btn-success"><i class="far fa-thumbs-up"></i></button>
+      </form>
+      {% endif %}
+
+    </li>
+
+    {% endfor %}
+
+  </ul>
+</div>
+
+{% endblock %}

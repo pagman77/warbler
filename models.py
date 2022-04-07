@@ -27,6 +27,7 @@ class Follows(db.Model):
         primary_key=True,
     )
 
+#TODO: make plural
 class Like(db.Model):
     """An individual liked warble. """
 
@@ -105,10 +106,10 @@ class User(db.Model):
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
 
-    likes = db.relationship(
+    liked_messages = db.relationship(
         "Message",
         secondary="likes",
-        backref="users"
+        backref="users_liked"
     )
 
 
