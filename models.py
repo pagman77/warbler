@@ -1,6 +1,7 @@
 """SQLAlchemy models for Warbler."""
 
 from datetime import datetime
+from readline import set_completion_display_matches_hook
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
@@ -26,6 +27,22 @@ class Follows(db.Model):
         primary_key=True,
     )
 
+class Like(db.Model):
+    """An individual liked warble. """
+
+    __tablename__ = 'likes'
+
+    user_id= db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete="cascade"),
+        primary_key=True,
+    )
+
+    message_id = db.Column(
+        db.Integer,
+        db.ForeignKey('messages.id', ondelete="cascade"),
+        primary_key=True,
+    )
 
 class User(db.Model):
     """User in the system."""
@@ -87,6 +104,13 @@ class User(db.Model):
         primaryjoin=(Follows.user_following_id == id),
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
+
+    likes = db.relationship(
+        "Message",
+        secondary="likes",
+        backref="users"
+    )
+
 
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"

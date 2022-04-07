@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import CSRFProtectForm, UserAddForm, LoginForm, MessageForm, UserEditForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Like
 
 CURR_USER_KEY = "curr_user"
 
@@ -141,6 +141,7 @@ def list_users():
 
     Can take a 'q' param in querystring to search by that username.
     """
+    breakpoint()
 
     search = request.args.get('q')
 
