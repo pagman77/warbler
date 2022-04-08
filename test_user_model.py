@@ -66,7 +66,6 @@ class UserModelTestCase(TestCase):
         db.session.rollback()
 
 
-
     def test_user_model(self):
         """Does basic model work?"""
 
@@ -136,6 +135,8 @@ class UserModelTestCase(TestCase):
     def test_user_signup_success(self):
         """Does User.signup successfully create
         a new user given valid credentials?"""
+        #add test to check for pw hashing, itemize validating each piece of info
+        #pswds begin w/ $2b$
 
         u = User.signup(
             username="test3",
@@ -200,3 +201,5 @@ class UserModelTestCase(TestCase):
         auth_u = User.authenticate("testuser", "HASHED_PASSWORD33")
 
         self.assertFalse(auth_u)
+
+

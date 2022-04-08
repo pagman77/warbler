@@ -6,7 +6,8 @@ from wtforms.validators import DataRequired, Email, Length, Optional
 class MessageForm(FlaskForm):
     """Form for adding/editing messages."""
 
-    text = TextAreaField('text', validators=[DataRequired()])
+    text = TextAreaField('text', validators=[DataRequired(),
+                                    Length(min=(1),max=(140))])
 
 
 class UserAddForm(FlaskForm):

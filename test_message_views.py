@@ -50,8 +50,12 @@ class MessageViewTestCase(TestCase):
 
         db.session.commit()
 
+    def tearDown(self):
+        """Removes all session commits."""
+        db.session.rollback()
+
     def test_add_message(self):
-        """Can use add a message?"""
+        """Can user add a message?"""
 
         # Since we need to change the session to mimic logging in,
         # we need to use the changing-session trick:
@@ -70,3 +74,68 @@ class MessageViewTestCase(TestCase):
 
             msg = Message.query.one()
             self.assertEqual(msg.text, "Hello")
+
+    def test_messages_destroy(self):
+        """Can user delete message?"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            #add message for deletion.
+            c.post("/messages/new", data={"text": "Hello"})
+            msg = Message.query.one()
+            #delete added msg.
+            resp = c.post(f"/messages/{msg.id}/delete")
+            msgs = Message.query.all()
+
+            self.assertEqual(resp.status_code, 302)
+            self.assertNotIn(msg, msgs)
+
+    def test_messages_show(self):
+        """Tests message display"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            c.post("/messages/new", data={"text": "Testing12345678"})
+            msg = Message.query.one()
+
+            resp = c.get(f'/messages/{msg.id}')
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Testing12345678", html)
+
+    def test_add_like(self):
+        """Tests liking a msg"""
+
+        with self.client as c:
+            with c.session_transaction() as sess:
+                sess[CURR_USER_KEY] = self.testuser.id
+
+            c.post("/messages/new", data={"text": "Hello"})
+            msg = Message.query.one()
+            u = User.query.get(self.testuser.id)
+
+            resp = c.post(f'/messages/{msg.id}/like')
+            msg = Message.query.get(msg.id)
+
+            breakpoint()
+
+            self.assertEqual(resp.status_code, 302)
+
+            self.assertIn(u, msg.users_liked)
+
+            user_ids = [user.id for user in msg.users_liked]
+
+            self.assertIn(self.testuser.id, user_ids)
+
+            #self.assertIs(self.testuser, u)
+
+
+
+
+
+
