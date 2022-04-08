@@ -63,14 +63,14 @@
               <form method="POST"
                     action="/messages/{{ msg.id }}/unlike"
                     class="like-area">
-                <button class="btn btn-outline-success btn-sm"><i class="far fa-thumbs-up"></i></button>
+                <button class="btn btn-info btn-sm"><i class="fas fa-thumbs-up"></i></button>
               </form>
             {% else %}
               <form
                 method="POST"
                 action="/messages/{{ msg.id }}/like"
                 class="like-area">
-                <button class="btn btn-success btn-sm"><i class="fas fa-thumbs-up"></i></button>
+                <button class="btn btn-outline-info btn-sm"><i class="far fa-thumbs-up"></i></button>
               </form>
             {% endif %}
 

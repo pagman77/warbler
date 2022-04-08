@@ -10,12 +10,12 @@
     <li class="list-group-item">
       <a href="/messages/{{ message.id }}" class="message-link" />
 
-      <a href="/users/{{ user.id }}">
-        <img src="{{ user.image_url }}" alt="user image" class="timeline-image">
+      <a href="/users/{{ message.user.id }}">
+        <img src="{{ message.user.image_url }}" alt="user image" class="timeline-image">
       </a>
 
       <div class="message-area">
-        <a href="/users/{{ user.id }}">@{{ user.username }}</a>
+        <a href="/users/{{ message.user.id }}">@{{ message.user.username }}</a>
         <span class="text-muted">
           {{ message.timestamp.strftime('%d %B %Y') }}
         </span>
@@ -27,14 +27,14 @@
         method="POST"
         action="/messages/{{ message.id }}/unlike"
         class="like-area">
-        <button class="btn btn-outline-success btn-sm"><i class="fas fa-thumbs-up"></i></button>
+        <button class="btn btn-info btn-sm"><i class="far fa-thumbs-up"></i></button>
       </form>
       {% else %}
       <form
         method="POST"
         action="/messages/{{ message.id }}/like"
         class="like-area">
-        <button class="btn btn-success"><i class="far fa-thumbs-up"></i></button>
+        <button class="btn btn-outline-info"><i class="fas fa-thumbs-up"></i></button>
       </form>
       {% endif %}
 

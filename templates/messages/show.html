@@ -18,11 +18,11 @@
 
             {% if g.user in message.users_liked %}
             <form method="POST" action="/messages/{{ message.id }}/unlike" class="like-area">
-              <button class="btn btn-outline-success btn-sm">u<i class="far fa-thumbs-up"></i></button>
+              <button class="btn btne-info btn-sm">u<i class="fas fa-thumbs-up"></i></button>
             </form>
             {% else %}
             <form method="POST" action="/messages/{{ message.id }}/like" class="like-area">
-              <button class="btn btn-success btn-sm"><i class="fas fa-thumbs-up"></i></button>
+              <button class="btn btn-outlin-info-sm"><i class="far fa-thumbs-up"></i></button>
             </form>
             {% endif %}
 
